@@ -1,10 +1,18 @@
 import { create } from "zustand";
-import { LANGUAGE_CONFIG } from "../app/(root)/_Monaco/Index";
-// Optional: You can define an initial state function if you want
+import { LANGUAGE_CONFIG } from "../app/root/_Monaco/Index";
+
 const getInitialState = () => ({
-  language: localStorage.getItem("editor-language") || "javascript",
-  theme: localStorage.getItem("editor-theme") || "vs-dark",
-  fontSize: parseInt(localStorage.getItem("editor-font-size"), 10) || 14,
+  language:
+    (typeof window !== "undefined" &&
+      localStorage.getItem("editor-language")) ||
+    "javascript",
+  theme:
+    (typeof window !== "undefined" && localStorage.getItem("editor-theme")) ||
+    "vs-dark",
+  fontSize:
+    (typeof window !== "undefined" &&
+      parseInt(localStorage.getItem("editor-font-size"), 10)) ||
+    14,
 });
 
 export const useEditorStore = create((set, get) => {
