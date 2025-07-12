@@ -1,15 +1,14 @@
  "use client"
 import { useEditorStore } from "@/src/store/useCodeEditor"
 import { LANGUAGE_CONFIG } from "../_Monaco/Index";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { RotateCcwIcon, ShareIcon, TypeIcon } from "lucide-react";
 import useMounted from "@/src/hook/useMounted";
 import { motion } from "framer-motion";
 import { Editor } from "@monaco-editor/react";
 const EditarPannel = () => {
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const {language,theme,fontSize,editor,setFontSize,setEditor } = useEditorStore();
- 
   const mounted=useMounted();
 
   useEffect(()=>{
@@ -18,6 +17,18 @@ const EditarPannel = () => {
     if (editor) editor.setValue(newCode);
    
   },[language,editor])
+
+ const  debounceTimer =useRef(null)
+const handleChange = (value) => {
+    if (!value) return;
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      localStorage.setItem(`editor-code-${language}`, value);
+      console.log("Saved to localStorage:", value);
+    }, 1000);
+  };
+
+  if (!mounted) return null;
   return (
  <div className="relative bg-[#12121a]/90 backdrop-blur rounded-xl border border-white/[0.05] p-6">
     <div className="flex items-center justify-between mb-4">
@@ -60,12 +71,14 @@ const EditarPannel = () => {
               <RotateCcwIcon className="size-4 text-gray-400" />
             </motion.button>
 
+              {/* Share Button Here */}
              <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
 
+              onClick={()=>{setIsShareOpen(true)}}
 
-           
+             
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg overflow-hidden bg-gradient-to-r
                from-blue-500 to-blue-600 opacity-90 hover:opacity-100 transition-opacity"
             >
@@ -82,6 +95,7 @@ const EditarPannel = () => {
         height="600px"
          theme={theme}
         onMount={(editor)=>setEditor(editor)}
+        onChange={handleChange}
          options={{
                 minimap: { enabled: false },
                 fontSize,
@@ -104,10 +118,8 @@ const EditarPannel = () => {
                 },
               }}
        />
+        {}
       </div>
-      
-      
-      
     </div>
   )
 }
