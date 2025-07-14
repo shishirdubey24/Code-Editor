@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Blocks,Code2 } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
 import LanguageSelector from "./LanguageSelector";
+import RunBtn from "./RunBtn";
 const Header = async() => {
 
 {/*const convex=new ConvexClient()
@@ -66,9 +67,17 @@ const user=await currentUser();
           <ThemeSelector/>
           <LanguageSelector/>
         </div>
-        
-      </div>
 
+
+     
+          <RunBtn/>
+         
+
+      </div>
+ 
+
+         
+     
       </div>
     </div>
   )
