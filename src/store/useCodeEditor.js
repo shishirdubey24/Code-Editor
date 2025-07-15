@@ -26,25 +26,25 @@ export const useEditorStore = create((set, get) => {
     editor: null,
     executionResult: null,
 
-    getCode: () => get().editor?.getValue() || "",
-
-    setEditor: (editor) => {
+    getCode() {
+      return get().editor?.getValue() || "";
+    },
+    setEditor(editor) {
       const savedCode = localStorage.getItem(`editor-code-${get().language}`);
       if (savedCode) editor.setValue(savedCode);
       set({ editor });
     },
 
-    setTheme: (theme) => {
+    setTheme(theme) {
       localStorage.setItem("editor-theme", theme);
       set({ theme });
     },
-
-    setFontSize: (fontSize) => {
+    setFontSize(fontSize) {
       localStorage.setItem("editor-font-size", fontSize.toString());
       set({ fontSize });
     },
 
-    setLanguage: (language) => {
+    setLanguage(language) {
       // Save current code before switching
       const currentCode = get().editor?.getValue();
       if (currentCode) {
