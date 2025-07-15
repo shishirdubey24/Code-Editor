@@ -4,6 +4,7 @@ import { LANGUAGE_CONFIG } from "../_Monaco/Index";
 import { useEffect, useState,useRef } from "react";
 import { RotateCcwIcon, ShareIcon, TypeIcon } from "lucide-react";
 import useMounted from "@/src/hook/useMounted";
+import ShareSnippetDialog from "./shareSnippet";
 import { motion } from "framer-motion";
 import { Editor } from "@monaco-editor/react";
 import Image from "next/image";
