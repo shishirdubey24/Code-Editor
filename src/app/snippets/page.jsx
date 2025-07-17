@@ -1,11 +1,13 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Code, Grid, Layers, Search, Tag, X } from "lucide-react";
 
-import SnippetCard from "./components/snippetCard";
-
-import { dummySnippets } from "./components/dummeySnippets";
+import SnippetCard from "./components/SnippetCard";
+import SnippetSkeleton from "./components/SnippetPageSkeleton"; // your loading component
+import NavigationHeader from "@/src/Compos/NavigationHeader";
+import { dummySnippets } from "./components/DummeySnippets";
 
 export default function SnippetsPage() {
   const [snippets, setSnippets] = useState([]);
@@ -15,9 +17,7 @@ export default function SnippetsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fake loading delay to simulate fetching
     setTimeout(() => {
-      // Example loading from localStorage
       const stored = localStorage.getItem("snippets");
       if (stored) {
         setSnippets(JSON.parse(stored));
@@ -28,31 +28,40 @@ export default function SnippetsPage() {
     }, 500);
   }, []);
 
-  const languages = [...new Set(snippets.map(s => s.language))];
+  const languages = [...new Set(snippets.map((s) => s.language))];
   const popularLanguages = languages.slice(0, 5);
 
-  const filteredSnippets = snippets.filter(snippet => {
-    const matchesSearch = snippet.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          snippet.language.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          snippet.userName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLanguage = !selectedLanguage || snippet.language === selectedLanguage;
+  const filteredSnippets = snippets.filter((snippet) => {
+    const matchesSearch =
+      snippet.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      snippet.language.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      snippet.userName.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesLanguage =
+      !selectedLanguage || snippet.language === selectedLanguage;
+
     return matchesSearch && matchesLanguage;
   });
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
+    return (
+      <div className="min-h-screen">
+        <NavigationHeader />
+        <SnippetSkeleton />
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
+      <NavigationHeader />
       <div className="relative max-w-7xl mx-auto px-4 py-12">
-        {/* Hero */}
+        {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r
-             from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
           >
             <BookOpen className="w-4 h-4" />
             Community Code Library
@@ -60,13 +69,15 @@ export default function SnippetsPage() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold text-gray-100 mb-6"
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 text-transparent bg-clip-text mb-6"
           >
             Discover & Share Code Snippets
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
             className="text-lg text-gray-400 mb-8"
           >
             Explore a curated collection of code snippets from the community
@@ -75,6 +86,7 @@ export default function SnippetsPage() {
 
         {/* Filters Section */}
         <div className="relative max-w-5xl mx-auto mb-12 space-y-6">
+          {/* Search Bar */}
           <div className="relative group">
             <Search className="absolute left-4 w-5 h-5 text-gray-400" />
             <input
@@ -82,29 +94,35 @@ export default function SnippetsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search snippets by title, language, or author..."
-              className="w-full pl-12 pr-4 py-4 bg-[#1e1e2e] text-white rounded-xl border border-[#313244]
-                placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="w-full pl-12 pr-4 py-4 bg-[#1e1e2e] text-white rounded-xl border border-[#313244] placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             />
           </div>
 
+          {/* Language Filters */}
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-[#1e1e2e] rounded-lg ring-1 ring-gray-800">
               <Tag className="w-4 h-4 text-gray-400" />
               <span className="text-sm text-gray-400">Languages:</span>
             </div>
 
-            {popularLanguages.map(lang => (
+            {popularLanguages.map((lang) => (
               <button
                 key={lang}
-                onClick={() => setSelectedLanguage(lang === selectedLanguage ? null : lang)}
-                className={`group relative px-3 py-1.5 rounded-lg transition-all duration-200
-                  ${selectedLanguage === lang
+                onClick={() =>
+                  setSelectedLanguage(lang === selectedLanguage ? null : lang)
+                }
+                className={`group relative px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                  selectedLanguage === lang
                     ? "text-blue-400 bg-blue-500/10 ring-2 ring-blue-500/50"
-                    : "text-gray-400 hover:text-gray-300 bg-[#1e1e2e] hover:bg-[#262637] ring-1 ring-gray-800"}
-                `}
+                    : "text-gray-400 hover:text-gray-300 bg-[#1e1e2e] hover:bg-[#262637] ring-1 ring-gray-800"
+                }`}
               >
                 <div className="flex items-center gap-2">
-                  <img src={`/${lang}.png`} alt={lang} className="w-4 h-4 object-contain" />
+                  <img
+                    src={`/${lang}.png`}
+                    alt={lang}
+                    className="w-4 h-4 object-contain"
+                  />
                   <span className="text-sm">{lang}</span>
                 </div>
               </button>
@@ -120,18 +138,29 @@ export default function SnippetsPage() {
               </button>
             )}
 
+            {/* View Toggle */}
             <div className="ml-auto flex items-center gap-3">
-              <span className="text-sm text-gray-500">{filteredSnippets.length} snippets found</span>
+              <span className="text-sm text-gray-500">
+                {filteredSnippets.length} snippets found
+              </span>
               <div className="flex items-center gap-1 p-1 bg-[#1e1e2e] rounded-lg ring-1 ring-gray-800">
                 <button
                   onClick={() => setView("grid")}
-                  className={`p-2 rounded-md ${view === "grid" ? "bg-blue-500/20 text-blue-400" : "text-gray-400 hover:text-gray-300 hover:bg-[#262637]"}`}
+                  className={`p-2 rounded-md ${
+                    view === "grid"
+                      ? "bg-blue-500/20 text-blue-400"
+                      : "text-gray-400 hover:text-gray-300 hover:bg-[#262637]"
+                  }`}
                 >
                   <Grid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setView("list")}
-                  className={`p-2 rounded-md ${view === "list" ? "bg-blue-500/20 text-blue-400" : "text-gray-400 hover:text-gray-300 hover:bg-[#262637]"}`}
+                  className={`p-2 rounded-md ${
+                    view === "list"
+                      ? "bg-blue-500/20 text-blue-400"
+                      : "text-gray-400 hover:text-gray-300 hover:bg-[#262637]"
+                  }`}
                 >
                   <Layers className="w-4 h-4" />
                 </button>
@@ -143,17 +172,20 @@ export default function SnippetsPage() {
         {/* Snippets Grid */}
         <motion.div
           className={`grid gap-6 ${
-            view === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 max-w-3xl mx-auto"
+            view === "grid"
+              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              : "grid-cols-1 max-w-3xl mx-auto"
           }`}
           layout
         >
           <AnimatePresence>
-            {filteredSnippets.map(snippet => (
+            {filteredSnippets.map((snippet) => (
               <SnippetCard key={snippet.id} snippet={snippet} />
             ))}
           </AnimatePresence>
         </motion.div>
 
+        {/* Empty State */}
         {filteredSnippets.length === 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -164,7 +196,9 @@ export default function SnippetsPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 ring-1 ring-white/10 mb-6">
                 <Code className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-xl font-medium text-white mb-3">No snippets found</h3>
+              <h3 className="text-xl font-medium text-white mb-3">
+                No snippets found
+              </h3>
               <p className="text-gray-400 mb-6">
                 {searchQuery || selectedLanguage
                   ? "Try adjusting your search query or filters"
