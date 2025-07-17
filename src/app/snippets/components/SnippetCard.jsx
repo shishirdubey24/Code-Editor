@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Clock, Trash2, User } from "lucide-react";
 import StarButton from "./StarButton"; // Your local StarButton component
 // If you don't have Image, remove this import and use <img> instead.
-
+import Link from "next/link"
 function SnippetCard({ snippet, onDelete }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -17,6 +17,7 @@ function SnippetCard({ snippet, onDelete }) {
   };
 
   return (
+    <Link href={`/snippets/${snippet.id}`}>
     <motion.div
       layout
       className="group relative"
@@ -99,6 +100,7 @@ function SnippetCard({ snippet, onDelete }) {
         </div>
       </div>
     </motion.div>
+     </Link>
   );
 }
 
