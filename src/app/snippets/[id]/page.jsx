@@ -7,12 +7,11 @@ import { Clock, Code, MessageSquare, User } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
 import CopyButton from "./components/CopyButton";
 import CommentThreadSection from "./components/CommentThreadSection";
-import { dummyComments,dummySnippets } from "../components/DummeySnippets";
 
 export default function SnippetDetailPage() {
   const { id } = useParams();
   const [snippet, setSnippet] = useState(null);
-  const [comments, setComments] = useState([]); // For future use if needed
+  const [comments, setComments] = useState([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
