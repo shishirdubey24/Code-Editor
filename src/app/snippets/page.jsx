@@ -5,9 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Code, Grid, Layers, Search, Tag, X } from "lucide-react";
 
 import SnippetCard from "./components/SnippetCard";
-import SnippetSkeleton from "./components/SnippetPageSkeleton"; // your loading component
+import SnippetSkeleton from "./components/SnippetPageSkeleton"; 
 import NavigationHeader from "@/src/Compos/NavigationHeader";
-//import { dummySnippets } from "./components/DummeySnippets";
+
 
 export default function SnippetsPage() {
   const [snippets, setSnippets] = useState([]);
