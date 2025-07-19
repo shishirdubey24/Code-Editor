@@ -7,7 +7,7 @@ import { BookOpen, Code, Grid, Layers, Search, Tag, X } from "lucide-react";
 import SnippetCard from "./components/SnippetCard";
 import SnippetSkeleton from "./components/SnippetPageSkeleton"; // your loading component
 import NavigationHeader from "@/src/Compos/NavigationHeader";
-import { dummySnippets } from "./components/DummeySnippets";
+//import { dummySnippets } from "./components/DummeySnippets";
 
 export default function SnippetsPage() {
   const [snippets, setSnippets] = useState([]);
@@ -16,17 +16,25 @@ export default function SnippetsPage() {
   const [view, setView] = useState("grid");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const stored = localStorage.getItem("snippets");
-      if (stored) {
-        setSnippets(JSON.parse(stored));
-      } else {
-        setSnippets(dummySnippets);
+useEffect(() => {
+  setTimeout(() => {
+    const stored = localStorage.getItem("snippets");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setSnippets(parsed);
+      } catch (err) {
+        console.error("Invalid JSON in localStorage for 'snippets'");
+        setSnippets([]);
       }
-      setLoading(false);
-    }, 500);
-  }, []);
+    } else {
+      setSnippets([]); // No dummy fallback
+    }
+    setLoading(false);
+  }, 500);
+}, []);
+
+
 
   const languages = [...new Set(snippets.map((s) => s.language))];
   const popularLanguages = languages.slice(0, 5);
