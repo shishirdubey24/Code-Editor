@@ -1,33 +1,30 @@
- "use client"
-import { useEditorStore } from "@/src/store/useCodeEditor"
+"use client";
+import { useEditorStore } from "@/src/store/useCodeEditor";
 import { LANGUAGE_CONFIG } from "../_Monaco/Index";
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { RotateCcwIcon, ShareIcon, TypeIcon } from "lucide-react";
 import useMounted from "@/src/hook/useMounted";
-import ShareSnippetDialog from "./shareSnippet";
 import { motion } from "framer-motion";
 import { Editor } from "@monaco-editor/react";
 import Image from "next/image";
-const EditarPannel = () => {
+
+const EditorPannel = () => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const { language, theme, fontSize, editor, setFontSize, setEditor } = useEditorStore();
   const mounted = useMounted();
   const debounceTimer = useRef(null);
 
- 
   useEffect(() => {
     const savedCode = localStorage.getItem(`editor-code-${language}`);
     const newCode = savedCode || LANGUAGE_CONFIG[language].defaultCode;
     if (editor) editor.setValue(newCode);
   }, [language, editor]);
 
-  
   useEffect(() => {
     const savedFontSize = localStorage.getItem("editor-font-size");
     if (savedFontSize) setFontSize(parseInt(savedFontSize));
   }, [setFontSize]);
 
- 
   const handleChange = (value) => {
     if (!value) return;
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
@@ -48,6 +45,27 @@ const EditarPannel = () => {
     localStorage.setItem("editor-font-size", size.toString());
   };
 
+  const handleShare = () => {
+    if (!editor) return;
+    const code = editor.getValue();
+    const title = prompt("Enter a title for your snippet:");
+    if (!title || !code) return;
+
+    const newSnippet = {
+      id: Date.now(),
+      title,
+      code,
+      language,
+      createdAt: new Date().toISOString(),
+    };
+
+    const existingSnippets = JSON.parse(localStorage.getItem("snippets") || "[]");
+    existingSnippets.push(newSnippet);
+    localStorage.setItem("snippets", JSON.stringify(existingSnippets));
+
+    alert("Snippet saved locally!");
+  };
+
   if (!mounted) return null;
 
   return (
@@ -56,8 +74,8 @@ const EditarPannel = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#1e1e2e] ring-1 ring-white/5 text-white text-xs">
-              <Image src={"/" + language + ".png"} alt="Logo" width={24} height={24} />
-           </div>
+            <Image src={"/" + language + ".png"} alt="Logo" width={24} height={24} />
+          </div>
           <div>
             <h2 className="text-sm font-medium text-white">Code Editor</h2>
             <p className="text-xs text-gray-500">Write and execute your code</p>
@@ -96,9 +114,9 @@ const EditarPannel = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => setIsShareOpen(true)}
+            onClick={handleShare}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg overflow-hidden bg-gradient-to-r
-             from-blue-500 to-blue-600 opacity-90 hover:opacity-100 transition-opacity"
+            from-blue-500 to-blue-600 opacity-90 hover:opacity-100 transition-opacity"
           >
             <ShareIcon className="size-4 text-white" />
             <span className="text-sm font-medium text-white">Share</span>
@@ -106,7 +124,7 @@ const EditarPannel = () => {
         </div>
       </div>
 
-     
+      {/* Code Editor */}
       <div className="relative group rounded-xl overflow-hidden ring-1 ring-white/[0.05]">
         <Editor
           height="600px"
@@ -136,12 +154,8 @@ const EditarPannel = () => {
           }}
         />
       </div>
-
-      {/* Share Snippet Modal */}
-      {isShareOpen && <ShareSnippetDialog onClose={() => setIsShareOpen(false)} />}
     </div>
   );
 };
 
-
-export default EditarPannel
+export default EditorPannel;
