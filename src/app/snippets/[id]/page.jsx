@@ -12,17 +12,17 @@ import { dummyComments,dummySnippets } from "../components/DummeySnippets";
 export default function SnippetDetailPage() {
   const { id } = useParams();
   const [snippet, setSnippet] = useState(null);
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState([]); // For future use if needed
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
 
-    const fetchedSnippet = dummySnippets.find((snip) => snip.id === id);
-    const fetchedComments = dummyComments.filter((c) => c.snippetId === id);
+    const savedSnippets = JSON.parse(localStorage.getItem("snippets")) || [];
+      const numericId = Number(id);
+    const matchedSnippet = savedSnippets.find((snip) => snip.id === numericId);
 
-    setSnippet(fetchedSnippet || null);
-    setComments(fetchedComments);
+    setSnippet(matchedSnippet || null);
     setLoading(false);
   }, [id]);
 
@@ -53,15 +53,17 @@ export default function SnippetDetailPage() {
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     <div className="flex items-center gap-2 text-[#8b8b8d]">
                       <User className="w-4 h-4" />
-                      <span>{snippet.userName}</span>
+                      <span>{snippet.userName || "Anonymous"}</span>
                     </div>
                     <div className="flex items-center gap-2 text-[#8b8b8d]">
                       <Clock className="w-4 h-4" />
-                      <span>{new Date(snippet.createdAt).toLocaleDateString()}</span>
+                      <span>
+                        {new Date(snippet.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-[#8b8b8d]">
                       <MessageSquare className="w-4 h-4" />
-                      <span>{comments.length} comments</span>
+                      <span>0 comments</span>
                     </div>
                   </div>
                 </div>
@@ -92,13 +94,14 @@ export default function SnippetDetailPage() {
                 readOnly: true,
                 automaticLayout: true,
                 scrollBeyondLastLine: false,
-                fontFamily: '"Fira Code", "Cascadia Code", Consolas, monospace',
+                fontFamily:
+                  '"Fira Code", "Cascadia Code", Consolas, monospace',
                 fontLigatures: true,
               }}
             />
           </div>
 
-          {/* Comments */}
+          {/* Comments Section (Future Feature) */}
           <CommentThreadSection comments={comments} />
         </div>
       </main>
