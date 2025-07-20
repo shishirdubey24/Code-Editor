@@ -4,15 +4,12 @@ import { Blocks,Code2 } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
 import LanguageSelector from "./LanguageSelector";
 import RunBtn from "./RunBtn";
+;
+import { SignedIn } from "@clerk/nextjs";
+import HeaderProfileBtn from "./HeaderProfileBtn";
 const Header = async() => {
 
-{/*const convex=new ConvexClient()
-const user=await currentUser();
 
-  const convexUser = await convex.query(api.users.getUser, {
-    userId: user?.id || "",
-  });
-*/}
   return (
     <div className="relative z-10">
       <div className="flex items-center lg:justify-between justify-center 
@@ -68,16 +65,15 @@ const user=await currentUser();
           <LanguageSelector/>
         </div>
 
-
-     
-          <RunBtn/>
-         
-
-      </div>
+          
+           <SignedIn/>
+            <RunBtn />
+          <SignedIn/>
  
-
-         
-     
+         <div className="pl-3 border-l border-gray-800">
+            <HeaderProfileBtn />
+          </div>
+      </div>
       </div>
     </div>
   )
